@@ -1,0 +1,184 @@
+/* ===== 기본 설정 ===== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  background: linear-gradient(135deg, #fdfbfb, #ebedee);
+  color: #333;
+}
+
+/* ===== 레이아웃 ===== */
+.container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+/* ===== 헤더 ===== */
+.header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  color: #5b7cff;
+}
+
+.subtitle {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #777;
+}
+
+/* ===== 카드 ===== */
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== 입력 필드 ===== */
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #555;
+}
+
+.field input {
+  height: 44px;
+  padding: 0 14px;
+  font-size: 15px;
+  border-radius: 12px;
+  border: 2px solid #e6e8ff;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.field input::placeholder {
+  color: #bbb;
+}
+
+.field input:focus {
+  border-color: #5b7cff;
+  background: #f5f7ff;
+}
+
+/* ===== 버튼 영역 ===== */
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.actions button {
+  flex: 1;
+  height: 44px;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+#searchBtn {
+  background: #5b7cff;
+  color: #fff;
+  box-shadow: 0 6px 0 #425bd6;
+}
+
+#resetBtn {
+  background: #f1f3f9;
+  color: #555;
+}
+
+.actions button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+/* ===== 도움말 ===== */
+.helper {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+}
+
+/* ===== 결과 영역 ===== */
+.sectionTitle {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #444;
+}
+
+.message {
+  font-size: 14px;
+  text-align: center;
+  color: #ff6b6b;
+  margin-bottom: 8px;
+}
+
+/* ===== 결과 테이블 ===== */
+.resultArea {
+  margin-top: 8px;
+}
+
+.resultTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.resultTable th {
+  width: 90px;
+  text-align: left;
+  font-size: 14px;
+  color: #666;
+  padding: 10px 0;
+}
+
+.resultTable td {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* ===== 미니 버튼 ===== */
+.miniBtn {
+  margin-left: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: #e6ebff;
+  color: #4a63ff;
+}
+
+.miniBtn:hover {
+  background: #d9e0ff;
+}
+
+/* ===== 주의 문구 ===== */
+.notice {
+  margin-top: 12px;
+  font-size: 11px;
+  color: #999;
+  text-align: center;
+}

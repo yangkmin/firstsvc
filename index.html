@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>우리학교 구글 계정 검색</title>
+
+  <!-- CSS 파일 연결 (다음 단계에서 작성) -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <h1 class="title">구글 계정 검색</h1>
+      <p class="subtitle">학번과 이름을 입력하면 계정 정보를 조회합니다.</p>
+    </header>
+
+    <!-- form으로 감싸면 Enter 제출이 자연스럽게 동작 -->
+    <form id="searchForm" class="card" autocomplete="off">
+      <div class="field">
+        <label for="studentNo">학번</label>
+        <input
+          id="studentNo"
+          name="studentNo"
+          type="text"
+          inputmode="numeric"
+          placeholder="예) 10501"
+          required
+        />
+      </div>
+
+      <div class="field">
+        <label for="studentName">이름</label>
+        <input
+          id="studentName"
+          name="studentName"
+          type="text"
+          placeholder="예) 홍길동"
+          required
+        />
+      </div>
+
+      <div class="actions">
+        <button id="searchBtn" type="submit">검색</button>
+        <button id="resetBtn" type="button">초기화</button>
+      </div>
+
+      <p id="helperText" class="helper">
+        학번/이름이 일치하는 경우에만 결과가 표시됩니다.
+      </p>
+    </form>
+
+    <!-- 결과 영역 -->
+    <section class="card" aria-live="polite">
+      <h2 class="sectionTitle">조회 결과</h2>
+
+      <!-- 안내/에러 메시지 -->
+      <div id="message" class="message" role="status"></div>
+
+      <!-- 결과 테이블 -->
+      <div id="resultArea" class="resultArea" hidden>
+        <table class="resultTable">
+          <tbody>
+            <tr>
+              <th scope="row">Google ID</th>
+              <td><span id="resultId">-</span></td>
+            </tr>
+            <tr>
+              <th scope="row">PW</th>
+              <td>
+                <span id="resultPw">-</span>
+                <button id="togglePwBtn" type="button" class="miniBtn">
+                  표시/숨김
+                </button>
+                <button id="copyBtn" type="button" class="miniBtn">
+                  복사
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="notice">
+          ※ 계정 정보는 화면에 노출되지 않도록 주의하세요.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- JS 파일 연결 (다음 단계에서 작성) -->
+  <script src="app.js"></script>
+</body>
+</html>
