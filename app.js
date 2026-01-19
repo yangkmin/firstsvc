@@ -1,17 +1,14 @@
-// app.js
-// ※ 주의: 이 예시는 "프론트엔드(브라우저)에서" 계정/비번을 조회하는 구조라
-//        실제 배포용으로는 보안상 매우 위험합니다.
-//        (다음 단계에서 서버+인증 방식으로 바꾸는 걸 추천)
-//        일단 요청하신 기능 구현(검색/엔터/표시/숨김/복사/초기화)만 완성해둡니다.
+// app.js (로컬 데이터 + Inko 이름 보정)
 
 (() => {
-  // ===== 1) 샘플 데이터 (여기에 학생-계정 매핑을 넣으세요) =====
-  // - studentNo(학번), name(이름) 기준으로 검색합니다.
-  // - googleId / googlePw 값을 바꿔서 사용하세요.
+  // ===== 0) Inko 준비 =====
+  // CDN이 정상 로드되면 window.Inko가 존재합니다.
+  const inko = (typeof Inko !== "undefined") ? new Inko() : null;
+
+  // ===== 1) 로컬 데이터 (여기에 실제 매핑을 넣으세요) =====
   const ACCOUNTS = [
     { studentNo: "10501", name: "홍길동", googleId: "s10501@school.kr", googlePw: "pw-10501" },
     { studentNo: "10502", name: "김하늘", googleId: "s10502@school.kr", googlePw: "pw-10502" },
-    // { studentNo: "....", name: "....", googleId: "....", googlePw: "...." },
   ];
 
   // ===== 2) DOM =====
@@ -35,10 +32,27 @@
 
   // ===== 4) 유틸 =====
   const normalize = (s) => String(s ?? "").trim();
-  const normalizeName = (s) => normalize(s).replace(/\s+/g, ""); // 이름 공백 제거 정도만
+  const normalizeStudentNo = (s) => normalize(s).replace(/\D/g, ""); // 숫자만
+
+  // ✅ 핵심: 이름 정규화(공백 제거 + 영문타이핑->한글 변환)
+  function normalizeNameSmart(input) {
+    const raw = normalize(input).replace(/\s+/g, "");
+    if (!raw) return "";
+
+    // 이미 한글이 포함되면 그대로(혼합 입력은 변환 안 하는 게 안전)
+    if (/[가-힣]/.test(raw)) return raw;
+
+    // Inko 없으면 그냥 반환
+    if (!inko) return raw;
+
+    // 영문 자판으로 친 한글을 변환 시도
+    const converted = inko.en2ko(raw);
+
+    // 변환 결과에 한글이 생기면 변환값 사용, 아니면 원본 유지
+    return /[가-힣]/.test(converted) ? converted : raw;
+  }
 
   const setMessage = (text, type = "error") => {
-    // type: "error" | "ok" | "info"
     messageEl.textContent = text;
     if (!text) {
       messageEl.style.color = "";
@@ -64,7 +78,6 @@
     resultArea.hidden = false;
 
     resultIdEl.textContent = account.googleId;
-
     pwHidden = true;
     resultPwEl.textContent = maskPw(account.googlePw);
 
@@ -72,24 +85,32 @@
   };
 
   const findAccount = (studentNo, name) => {
-    const no = normalize(studentNo);
-    const nm = normalizeName(name);
+    const no = normalizeStudentNo(studentNo);
+    const nm = normalizeNameSmart(name);
 
     return (
-      ACCOUNTS.find(
-        (a) => normalize(a.studentNo) === no && normalizeName(a.name) === nm
-      ) || null
+      ACCOUNTS.find((a) => {
+        const rowNo = normalizeStudentNo(a.studentNo);
+        const rowName = normalizeNameSmart(a.name);
+        return rowNo === no && rowName === nm;
+      }) || null
     );
   };
 
-  // ===== 5) 이벤트: 검색(Submit) =====
+  // ===== 5) 이벤트: 이름 입력 보정(선택 UX) =====
+  // - 학생이 ghdrlfehd 치고 포커스를 빼면 자동으로 홍길동으로 바뀜
+  studentNameInput.addEventListener("blur", () => {
+    const fixed = normalizeNameSmart(studentNameInput.value);
+    if (fixed) studentNameInput.value = fixed;
+  });
+
+  // ===== 6) 이벤트: 검색(Submit=버튼/엔터) =====
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const studentNo = normalize(studentNoInput.value);
-    const studentName = normalize(studentNameInput.value);
+    const studentNo = normalizeStudentNo(studentNoInput.value);
+    const studentName = normalizeNameSmart(studentNameInput.value);
 
-    // 간단 검증
     if (!studentNo || !studentName) {
       setMessage("학번과 이름을 모두 입력해 주세요.", "error");
       hideResult();
@@ -99,7 +120,12 @@
     const found = findAccount(studentNo, studentName);
 
     if (!found) {
-      setMessage("일치하는 정보가 없습니다. 학번/이름을 확인해 주세요.", "error");
+      // 혹시 Inko가 로드 안 됐을 때를 안내(선택)
+      if (!inko) {
+        setMessage("일치하는 정보가 없습니다. (Inko 로드 확인: 스크립트 순서)", "error");
+      } else {
+        setMessage("일치하는 정보가 없습니다. 학번/이름을 확인해 주세요.", "error");
+      }
       hideResult();
       return;
     }
@@ -107,7 +133,7 @@
     showResult(found);
   });
 
-  // ===== 6) 이벤트: 초기화 =====
+  // ===== 7) 이벤트: 초기화 =====
   resetBtn.addEventListener("click", () => {
     form.reset();
     setMessage("", "info");
@@ -115,7 +141,7 @@
     studentNoInput.focus();
   });
 
-  // ===== 7) 이벤트: PW 표시/숨김 =====
+  // ===== 8) 이벤트: PW 표시/숨김 =====
   togglePwBtn.addEventListener("click", () => {
     if (!lastFound) {
       setMessage("먼저 검색을 진행해 주세요.", "info");
@@ -128,7 +154,7 @@
       : lastFound.googlePw;
   });
 
-  // ===== 8) 이벤트: 복사 =====
+  // ===== 9) 이벤트: 복사 =====
   copyBtn.addEventListener("click", async () => {
     if (!lastFound) {
       setMessage("먼저 검색을 진행해 주세요.", "info");
@@ -140,8 +166,7 @@
     try {
       await navigator.clipboard.writeText(textToCopy);
       setMessage("클립보드에 복사했어요.", "ok");
-    } catch (err) {
-      // 일부 환경(보안/권한)에서 clipboard API가 막힐 수 있어 fallback
+    } catch {
       try {
         const ta = document.createElement("textarea");
         ta.value = textToCopy;
@@ -156,7 +181,7 @@
     }
   });
 
-  // ===== 9) 초기 화면 =====
+  // ===== 10) 초기화 =====
   hideResult();
   setMessage("", "info");
 })();
